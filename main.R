@@ -1,6 +1,8 @@
 library(tidyverse)
 library(tidyquant)
 library(corrplot)
+library(ggtext)
+library(shiny)
 
 symbol1 <- read.csv("./symbol_list/nasdaq_screener_1667510028096.csv")
 symbol2 <- read.csv("./symbol_list/nasdaq_screener_1667510197492.csv")
@@ -21,13 +23,16 @@ ui <- fluidPage(
       wellPanel(
         plotOutput('linechart',brush = brushOpts("area", direction = "xy")),
         plotOutput('hist1',height = 100)
-        ),
+        )
+  )),
+  fluidRow(
+    column(9 , 
       wellPanel(
-        plotOutput('candlestickplot',hover = hoverOpts(id ="plot_hover", delay = 0)),
-        plotOutput('hist2',height = 100)
-      )
-    ),
-    tableOutput("hover_info")
+           plotOutput('candlestickplot',hover = hoverOpts(id ="plot_hover", delay = 100)),
+           plotOutput('hist2',height = 100))),
+    column(3 , wellPanel(
+      htmlOutput("text"),#, style = "font-size:25px;"
+      tableOutput("select_table")))
   ),
   
   # below are for correlation calculation
@@ -89,9 +94,18 @@ server <- function(input,output){
         geom_bar(stat='identity', show.legend = FALSE)
     })
     
-    output$hover_info <- renderTable({
-      hover <- round(input$plot_hover$x)
-      df[as.numeric(df$date) == hover,]
+    # detail information 
+    output$text <- renderUI({
+      if (is.null(input$plot_hover$x)) {
+        label = ""
+      }else{
+        hover <- round(input$plot_hover$x)
+        hov <- df[as.numeric(df$date) == hover,]
+        label = paste0('date:',hov$date , '<br/>','open:',round(hov$open,2) ,'<br/>', 'close:',round(hov$close,2) ,'<br/>', 'volume:',hov$volume,'<br/>',
+                       'high:',round(hov$high,2),'<br/>','low:',round(hov$low,2) , '<br/>','return percent:',round(hov$return_percent,2))
+      }
+      HTML(label)
+      
     })
   })
   
@@ -117,5 +131,3 @@ server <- function(input,output){
   })
 }
 shinyApp(ui,server)
-
-corrplo
