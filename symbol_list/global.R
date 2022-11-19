@@ -8,6 +8,7 @@ symbol3 <- read.csv("./symbol_list/nasdaq_screener_1667510230035.csv")
 symbol <- rbind(symbol1,symbol2,symbol3)
 symbols <- symbol$Symbol
 
+av_sy = list()
 
 for (sy in symbols) {
   fit<-try(getSymbols(sy,warnings = FALSE,auto.assign = FALSE),silent=TRUE)
