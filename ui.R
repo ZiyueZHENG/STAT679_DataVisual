@@ -4,7 +4,7 @@ library(corrplot)
 library(ggtext)
 library(shiny)
 
-symbol <- read.csv("./symbol_list/symbolS.csv")
+symbol <- read.csv("./symbol_list/symbols.csv")
 
 ui <- fluidPage(
   # below are for one stock data request
