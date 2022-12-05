@@ -6,7 +6,7 @@ library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
 
-symbol <- read.csv("./symbol_list/symbolS.csv")
+symbol <- read.csv("./symbol_list/symbols.csv")
 
 header <- dashboardHeader(title = "Stock Data Visual")
 
@@ -17,6 +17,7 @@ sidebar <- dashboardSidebar(
     menuItem("Multiple stocks", tabName = "cor")
   )
 )
+<<<<<<< HEAD
 
 body <- dashboardBody(
   tabItems(
@@ -73,3 +74,5 @@ ui <- dashboardPage(header,
                     sidebar, 
                     body,
                     controlbar = NULL)
+=======
+>>>>>>> 747b81dd102367e2d1cc43069977af6489bda12a
