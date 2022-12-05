@@ -2,7 +2,8 @@ library(tidyverse)
 library(tidyquant)
 library(corrplot)
 library(ggtext)
-library(shiny)
+library(ggHoriPlot)
+library(reshape2)
 
 server <- function(input,output){
   # below are for one stock data request
@@ -64,6 +65,11 @@ server <- function(input,output){
       HTML(label)
       
     })
+    
+    # table 
+    output$text1 <- renderText(paste(input$symbol , 'from' , input$time[1], 'to' , input$time[2]))
+    output$table <- renderDataTable(selected_data())
+    
   })
   
   # below are for correlation calculation
@@ -84,6 +90,21 @@ server <- function(input,output){
     
     output$cor_plot <- renderPlot({
       corrplot(cor((comb_data))) ###give a plot on this matrix
+    })
+    
+    #horizon plot 
+    output$hor_plot <- renderPlot({
+      date = seq(as.Date(input$com_date[1]) , length.out = nrow(comb_data),by = "day" )
+      print(date , length(nrow(comb_data)))
+      sub_data <- comb_data %>% 
+        mutate(date = date) %>%
+        melt(id=c("date"),measure = name_set,variable.name = "Stock_name",value.name = "close")
+      cutpoints <- seq(0, max(sub_data$close), by = 1)
+      print(sub_data)
+      sub_data %>% 
+        ggplot() +geom_horizon(aes(date, close, fill = ..Cutpoints..), origin = 5, horizonscale = cutpoints) +
+        scale_fill_hcl(palette = 'RdBu') +facet_grid(reorder(Stock_name, -close) ~ .) +
+        theme(strip.text.y = element_text(angle = 0),axis.text.y = element_blank(),axis.ticks.y = element_blank())
     })
   })
 }
