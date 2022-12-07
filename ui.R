@@ -12,12 +12,13 @@ header <- dashboardHeader(title = "Stock Data Visual")
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
-    menuItem("Single stock", tabName = "data"),
-    menuItem("Table", tabName = "table"),
+    menuItem("Single stock", 
+             menuSubItem("Plot", tabName = "data"),
+             menuSubItem("Table", tabName = "table")),
     menuItem("Multiple stocks", tabName = "cor")
   )
 )
-<<<<<<< HEAD
+
 
 body <- dashboardBody(
   tabItems(
@@ -33,7 +34,7 @@ body <- dashboardBody(
               fluidRow(
                 column(9,
                        wellPanel(
-                         plotOutput('linechart',brush = brushOpts("area", direction = "xy")),
+                         plotOutput('linechart',brush = brushOpts("area", direction = "x")),
                          plotOutput('hist1',height = 100)
                        )
                 )),
@@ -74,5 +75,4 @@ ui <- dashboardPage(header,
                     sidebar, 
                     body,
                     controlbar = NULL)
-=======
->>>>>>> 747b81dd102367e2d1cc43069977af6489bda12a
+

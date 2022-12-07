@@ -79,11 +79,12 @@ server <- function(input,output){
     for(i in 1:n){
       temp <- getSymbols(input$sym_set[i],from = input$com_date[1],to = input$com_date[2],warnings = FALSE,auto.assign = FALSE)
       names(temp)[1:6] <- c("open","high","low","close","volume","adjusted")
+      data_temp <- as.data.frame(temp)
       if(i == 1){
-        comb_data <- data.frame(x1=as.data.frame(temp)$close)
+        comb_data <- data.frame(x1=(data_temp$close - data_temp$open)*100/(data_temp$open)) #(close-open)*100/open
       }
       else{
-        comb_data <- cbind(comb_data,as.data.frame(temp)$close)
+        comb_data <- cbind(comb_data,(data_temp$close - data_temp$open)*100/(data_temp$open))
       }
     }
     colnames(comb_data) <- name_set
@@ -99,10 +100,11 @@ server <- function(input,output){
       sub_data <- comb_data %>% 
         mutate(date = date) %>%
         melt(id=c("date"),measure = name_set,variable.name = "Stock_name",value.name = "close")
-      cutpoints <- seq(0, max(sub_data$close), by = 1)
+      cutpoints <- seq(min(sub_data$close), max(sub_data$close), by = (max(sub_data$close)-min(sub_data$close))/10 )
       print(sub_data)
       sub_data %>% 
         ggplot() +geom_horizon(aes(date, close, fill = ..Cutpoints..), origin = 5, horizonscale = cutpoints) +
+        ylab('return') +
         scale_fill_hcl(palette = 'RdBu') +facet_grid(reorder(Stock_name, -close) ~ .) +
         theme(strip.text.y = element_text(angle = 0),axis.text.y = element_blank(),axis.ticks.y = element_blank())
     })
